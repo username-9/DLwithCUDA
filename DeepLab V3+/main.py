@@ -151,6 +151,7 @@ def train(epoch_all: int, model_name, train_data_path: str = r"C:\Users\PZH\Desk
                 process_bar.set_postfix(dict(loss=f"{result_loss.item():.5f} at {train_step}"))
                 re_loss_ls.append(result_loss.item())
         print(re_loss_ls)
+        print(f"Min Loss: {min(re_loss_ls)}")
         # if (i + 1) % 500 == 0:
         if (i + 1) % 1 == 0:
             # 保存模型
