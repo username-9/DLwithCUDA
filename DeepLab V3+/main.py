@@ -56,9 +56,9 @@ def test(epoch_id, model_name, test_data_path: str, device: torch.device):
     image_ids = 0
     test_data = data_deal.UsingOwnData(test_data_path)
     test_data_loader = torch.utils.data.DataLoader(test_data)
-    for image, gt_labels in tqdm(
-            test_data_loader, total=len(test_data_loader), dynamic_ncols=True
-    ):
+    pro_bar = tqdm(test_data_loader, total=test_data.__len__(), position=0, leave=True)
+    pro_bar.set_description(f"Validation after epoch {epoch_id+1}: ")
+    for image, gt_labels in pro_bar:
         # Image
         image_ids += 1
         image = image.to(device)
@@ -115,7 +115,7 @@ def train(epoch_all: int, model_name, train_data_path: str = r"C:\Users\PZH\Desk
     model_name.to(device)
     loss = torch.nn.CrossEntropyLoss()
     loss.to(device)
-    learn_step = 0.01
+    learn_step = 0.001
     optimize = torch.optim.SGD(model_name.parameters(), lr=learn_step)
     epoch_num = epoch_all
     model_name.train()
@@ -132,7 +132,6 @@ def train(epoch_all: int, model_name, train_data_path: str = r"C:\Users\PZH\Desk
     for i in range(epoch_num):
         re_loss_ls = []
         total = int(train_data_0.__len__())
-        print(f"Epoch {i + 1} of {epoch_all}")
         process_bar = tqdm(train_data, total=total, position=0, leave=True)
         process_bar.set_description(f"Epoch {i + 1} of {epoch_all}")
         for data in process_bar:
@@ -150,7 +149,11 @@ def train(epoch_all: int, model_name, train_data_path: str = r"C:\Users\PZH\Desk
             if train_step % 100 == 0:
                 process_bar.set_postfix(dict(loss=f"{result_loss.item():.5f} at {train_step}"))
                 re_loss_ls.append(result_loss.item())
-        print(re_loss_ls)
+        for num in re_loss_ls:
+            print(num, end=' ')
+            if (re_loss_ls.index(num)+1) % 5 == 0:
+                print("\n")
+        print(f"Min Loss: {min(re_loss_ls)}")
         # if (i + 1) % 500 == 0:
         if (i + 1) % 1 == 0:
             # 保存模型
@@ -179,6 +182,6 @@ if __name__ == '__main__':
                                          multi_grids=[1, 2, 4], output_stride=16)
     # train(10, model, r"C:\Users\PZH\Desktop\RGZNYY\Data",
     #       r"C:\Users\PZH\Desktop\RGZNYY\Data\test")
-    train_go_on(model, r"C:\Users\Administrator\PycharmProjects\DLwithCUDA\DeepLab V3+\my_model_5.pth",
-                1,  r"C:\Users\PZH\Desktop\RGZNYY\Data",
+    train_go_on(model, r"C:\Users\Administrator\PycharmProjects\DLwithCUDA\DeepLab V3+\my_model_8.pth",
+                10,  r"C:\Users\PZH\Desktop\RGZNYY\Data",
                 r"C:\Users\PZH\Desktop\RGZNYY\Data\test")
